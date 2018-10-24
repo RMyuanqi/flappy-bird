@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin: 0;padding: 0}
+        canvas{border: 1px solid blue;margin: 0 auto;display: block}
+    </style>
+</head>
+<body>
+<canvas id="myCanvas" width="360" height="512"></canvas>
+<script src="js/Bird.js"></script>
+<script src="js/Background.js"></script>
+<script src="js/Game.js"></script>
+<script src="js/Pipe.js"></script>
+<script src="js/Logo.js"></script>
+<script>
+
+    //所需的图片放到数组中
+    var imgArr = ["images/bird0_0.png", "images/bird0_1.png", "images/bird0_2.png", "images/bg_day.png",
+        "images/land.png", "images/pipe_down.png", "images/pipe_up.png", "images/text_game_over.png",
+        "images/text_ready.png", "images/title.png"];
+
+    loadImage(imgArr,function (imgArr) {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        var bird = new Bird(imgArr.slice(0,3), 100, 100);
+        var pipe = new Pipe(imgArr[5], imgArr[6], 4, 360);
+        var land = new Background(imgArr[4], 4, 0, 400);
+        var mountain = new Background(imgArr[3], 2, 0, 0);
+        var logo = new Logo(imgArr[7], imgArr[8], imgArr[9], 180, 250);
+
+       //开始游戏
+        window.g = new Game(ctx, bird, pipe, land, mountain, logo);
+    });
+
+    /*
+    * 图片加载
+    * @arr      数组，保存图片的路径
+    * @callback 回调函数，图片加载完成之后执行
+    * */
+    function loadImage(arr, callback) {
+        var idx = 0;
+        //存放加载后的图片
+        var loadImgArr = [];
+        arr.forEach(function (value, index) {
+            //创建图片
+            var img = new Image();
+            img.src = value;
+            //图片加载完成再执行
+            img.onload = function () {
+                idx++;
+                //加载后的图片放入数组中，使用索引值保证加载顺序
+                loadImgArr[index] = this;
+                //使用信号量判断是否与数组中的长度相等
+                if(idx === arr.length){
+                    callback(loadImgArr)
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
